@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Schema xmlns="http://www.midgard-project.org/repligard/1.4">
+
+    <type name="org_openpsa_project" table="org_openpsa_project">
+        <property name="id" type="unsigned integer" primaryfield="id">
+            <description>Local non-replication-safe database identifier</description>
+        </property>
+        <property name="code" type="string" />
+        <property name="title" type="string"/>
+        <property name="description" type="text"/>
+
+        <property name="start" type="integer"/>
+        <property name="end" type="integer"/>
+
+        <property name="status" field="projectStatus" type="integer">
+          <description>
+            Current project status
+          </description>
+        </property>
+
+        <property name="manager" link="midgard_person:id" type="unsigned integer"/>
+
+        <property name="customer" link="midgard_group:id" type="unsigned integer"/>
+        <property name="customerContact" link="midgard_person:id" type="unsigned integer"/>
+
+        <!-- Additional contacts are handled as members to project -->
+
+        <!-- Caches for various values that otherwise would have to be queried runtime -->
+        <property name="plannedHours" type="float"/>
+        <property name="reportedHours" type="float"/>
+        <property name="invoicedHours" type="float"/>
+        <property name="invoiceableHours" type="float"/>
+
+        <!-- Common OpenPSA properties -->
+        <property name="orgOpenpsaAccesstype" type="integer">
+          <description>
+            Shortcut for various ACL scenarios
+          </description>
+        </property>
+        <property name="orgOpenpsaOwnerWg" type="string">
+          <description>
+            The "owner" workgroup of this object
+          </description>
+        </property>
+        <!-- /Common OpenPSA properties -->
+
+    </type>
+
+    <type name="org_openpsa_role" table="org_openpsa_role" >
+        <property name="id" type="unsigned integer" primaryfield="id">
+            <description>Local non-replication-safe database identifier</description>
+        </property>
+        <property name="objectGuid" type="guid" index="yes"/>
+        <property name="project" parentfield="project" link="org_openpsa_project:id" type="unsigned integer"/>
+        <property name="role" type="integer" index="yes"/>
+        <property name="description" type="string"/>
+        <property name="person" link="midgard_person:id" type="unsigned integer" />
+        <property name="status" type="integer"/>
+    </type>
+
+    <type name="org_openpsa_task" table="org_openpsa_task" parent="org_openpsa_project">
+        <property name="id" type="unsigned integer" primaryfield="id">
+            <description>Local non-replication-safe database identifier</description>
+        </property>
+        <property name="up" upfield="up" link="org_openpsa_task:id" type="unsigned integer"/>
+        <property name="project" parentfield="project" link="org_openpsa_project:id" type="unsigned integer"/>
+        <property name="start" type="integer"/>
+        <property name="end" type="integer"/>
+        <property name="title" type="string"/>
+        <property name="description" type="text"/>
+
+        <property name="plannedHours" type="float"/>
+
+        <property name="status" type="integer">
+            <description>
+                cache of last status
+            </description>
+        </property>
+
+        <property name="agreement" link="org_openpsa_salesproject_deliverable:id" type="unsigned integer"/>
+        <property name="customer" link="midgard_group:id" type="unsigned integer"/>
+
+        <property name="manager" link="midgard_person:id" type="unsigned integer"/>
+
+        <!-- Caches for various values that otherwise would have to be queried runtime -->
+        <property name="reportedHours" type="float"/>
+        <property name="invoicedHours" type="float"/>
+        <property name="invoiceableHours" type="float"/>
+
+        <property name="hoursInvoiceableDefault" type="boolean">
+            <description>
+                Are hours invoiceable by default ?
+            </description>
+        </property>
+        <property name="priority" type="integer" />
+        <!-- TODO: how to handle "percentages" [as in the 1.x Projects] ? I think they will be a member-like system or something -->
+
+        <!-- Common OpenPSA properties -->
+        <property name="orgOpenpsaAccesstype" type="integer">
+            <description>
+                Shortcut for various ACL scenarios
+            </description>
+        </property>
+        <property name="orgOpenpsaOwnerWg" type="string">
+            <description>
+                The "owner" workgroup of this object
+            </description>
+        </property>
+        <!-- /Common OpenPSA properties -->
+
+    </type>
+
+    <type name="org_openpsa_task_status" table="org_openpsa_task_status" parent="org_openpsa_task">
+        <property name="id" type="unsigned integer" primaryfield="id">
+            <description>Local non-replication-safe database identifier</description>
+        </property>
+        <property name="task" link="org_openpsa_task:id" type="unsigned integer" parentfield="task"/>
+        <property name="targetPerson" link="midgard_person:id" type="unsigned integer"/>
+        <property name="type" type="integer" index="yes"/>
+        <property name="comment" type="text" />
+    </type>
+
+    <type name="org_openpsa_task_resource" table="org_openpsa_task_resource" parent="org_openpsa_task">
+        <property name="id" type="unsigned integer" primaryfield="id">
+            <description>Local non-replication-safe database identifier</description>
+        </property>
+        <property name="person" link="midgard_person:id" type="unsigned integer"/>
+        <property name="task" link="org_openpsa_task:id" type="unsigned integer" parentfield="task"/>
+
+        <!-- Common OpenPSA properties -->
+        <property name="orgOpenpsaObtype" type="integer">
+            <description>
+                Used to a) distinguish OpenPSA objects in QB b) store object "subtype" (project vs task etc)
+            </description>
+        </property>
+        <!-- /Common OpenPSA properties -->
+    </type>
+
+</Schema>
